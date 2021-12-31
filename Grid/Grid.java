@@ -84,4 +84,9 @@ public class Grid {
         }
         return contains_forward_slash(reflect, last_row, (input[0].length - 1) - last_col);
     }
+
+    public int number_wins_with_element(char[][] input, int input_row, int input_column) 
+    {
+        return 0;
+    }
 }

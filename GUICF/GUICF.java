@@ -80,7 +80,6 @@ public class GUICF extends CFGame {
     }
 
     public GUICF(CFPlayer ai1, CFPlayer ai2) {
-        /*
         Random rand = new Random();
         if(rand.nextBoolean()==true)
         {
@@ -91,9 +90,10 @@ public class GUICF extends CFGame {
             p2 = ai1;
             p1 = ai2;
         }
-        */
+        /*
         p1=ai1;
         p2=ai2;
+        */
         
         thisboard = new GameBoard();
         JPanel full_board = new JPanel();

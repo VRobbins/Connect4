@@ -37,7 +37,7 @@ public class VincentAI implements CFPlayer {
             }
         }
         //System.out.println(max);
-        if(max==Integer.MIN_VALUE)
+        if(max==Integer.MIN_VALUE+1)
         {
             minimax(position, 2, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
             Node<char[][]> best_move2 = position;
@@ -87,11 +87,12 @@ public class VincentAI implements CFPlayer {
 
     public int boardValue(Node<char[][]> position) { // return 100 (-100) if you win (resp. lose) in this position 
         if (redWin(position)) {
-            return color == 'R' ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            return color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
         if (blackWin(position)) {
-            return color == 'B' ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            return color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
+        
         return 0;
     }
 
@@ -119,12 +120,12 @@ public class VincentAI implements CFPlayer {
             return position.getVal();
         }
         if (redWin(position)) {
-            position.setVal(color == 'R' ? Integer.MAX_VALUE : Integer.MIN_VALUE);
-            return color == 'R' ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            position.setVal(color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1);
+            return color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
         if (blackWin(position)) {
-            position.setVal(color == 'B' ? Integer.MAX_VALUE : Integer.MIN_VALUE);
-            return color == 'B' ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            position.setVal(color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1);
+            return color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
         ArrayList<Node<char[][]>> children;
         if (isMaxing) {
