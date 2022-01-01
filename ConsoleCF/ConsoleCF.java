@@ -81,12 +81,12 @@ public class ConsoleCF extends CFGame {
 
         while (!game.isGameOver()) {
             game.play(first.nextMove(game));
-            //game.print();
-            //System.out.println();
+            // game.print();
+            // System.out.println();
             if (!game.isGameOver()) {
                 game.play(second.nextMove(game));
-                //game.print();
-                //System.out.println();
+                // game.print();
+                // System.out.println();
             }
         }
         if (game.isGameOver()) {
@@ -108,7 +108,7 @@ public class ConsoleCF extends CFGame {
 
         CFPlayer ai1 = new VincentAI();
         CFPlayer ai2 = new RandomAI();
-        int n = 1000;
+        int n = 10000;
         int winCount = 0;
         int winCount2 = 0;
         for (int i = 0; i < n; i++) {
@@ -120,6 +120,7 @@ public class ConsoleCF extends CFGame {
             if (game.getWinner() == ai2.getName()) {
                 winCount2++;
             }
+            System.out.println(i);
         }
         System.out.print(ai1.getName() + " wins ");
         System.out.print(((double) winCount) / ((double) n) * 100 + "%");

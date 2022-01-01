@@ -4,8 +4,8 @@ import Grid.Grid;
 public class CFGame {
     public boolean whose_turn = true; // true = red
     int count = 0;
-    int rows = 6;
-    int columns = 7;
+    static int rows = 6;
+    static int columns = 7;
     int winner = 0;
     public char[][] grid = new char[rows][columns];
     public int[] last_coord = new int[2];

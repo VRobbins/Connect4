@@ -10,6 +10,23 @@ public class VincentAI implements CFPlayer {
     char[][] board;
     char color;
     boolean whose_turn;
+    static int[][] entry_vals;
+    static int rows;
+    static int cols;
+
+    static {
+        Grid myGrid = new Grid();
+        rows = 6;
+        cols = 7;
+        entry_vals=new int[rows][cols];
+        for(int i = 0; i<rows;++i)
+        {
+            for(int j = 0; j<cols;++j)
+            {
+                entry_vals[i][j] = myGrid.number_wins_with_element(entry_vals, i, j);
+            }
+        }
+    }
 
     public String getName() {
         return "Vincent's AI";
@@ -59,7 +76,6 @@ public class VincentAI implements CFPlayer {
         for (int j = 0; j < board[0].length; j++) { // find legal moves
             if (input_parent.getData()[input_parent.getData().length - 1][j] == 'O') {
                 ret.add(play(input_parent.getData(), j, nextColor));
-                // ret.add( new Node<>( play(input_parent.getData(), j,nextColor) , null));
             }
         }
         input_parent.setNext(ret);
@@ -86,14 +102,27 @@ public class VincentAI implements CFPlayer {
     }
 
     public int boardValue(Node<char[][]> position) { // return 100 (-100) if you win (resp. lose) in this position 
+        Grid myGrid = new Grid();
         if (redWin(position)) {
             return color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
         if (blackWin(position)) {
             return color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
-        
-        return 0;
+        char[][] board = position.getData();
+        int sum_r = 0;
+        int sum_b = 0;
+        for(int i=0;i<board.length;++i)
+        {
+            for(int j = 0; j<board[0].length;++j)
+            {
+                if(board[i][j]=='R')
+                    sum_r+=entry_vals[i][j];
+                else if(board[i][j]=='B')
+                    sum_b+=entry_vals[i][j];
+            }
+        }
+        return color=='R'? sum_r-sum_b : sum_b - sum_r;
     }
 
     public boolean redWin(Node<char[][]> pos) { //returns true if red wins
@@ -119,23 +148,23 @@ public class VincentAI implements CFPlayer {
             position.setVal(boardValue(position));
             return position.getVal();
         }
-        if (redWin(position)) {
+        else if (redWin(position)) {
             position.setVal(color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1);
             return color == 'R' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
-        if (blackWin(position)) {
+        else if (blackWin(position)) {
             position.setVal(color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1);
             return color == 'B' ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
         }
+        int eval = 0;
         ArrayList<Node<char[][]>> children;
         if (isMaxing) {
             children = generateChildren(position, amIRed);
             int max = Integer.MIN_VALUE;
-            int val1 = 0;
             for (Node<char[][]> child : children) {
-                val1 = minimax(child, depth - 1, false, alpha, beta);
-                max = val1 > max ? val1 : max;
-                alpha = val1 > alpha ? val1 : alpha;
+                eval = minimax(child, depth - 1, false, alpha, beta);
+                max = eval > max ? eval : max;
+                alpha = eval > alpha ? eval : alpha;
                 if (beta <= alpha) {
                     break;
                 }
@@ -145,11 +174,10 @@ public class VincentAI implements CFPlayer {
         }
         children = generateChildren(position, !amIRed);
         int min = Integer.MAX_VALUE;
-        int val2 = 0;
         for (Node<char[][]> child : children) {
-            val2 = minimax(child, depth - 1, true, alpha, beta);
-            min = val2 < min ? val2 : min;
-            beta = val2 < beta ? val2 : beta;
+            eval = minimax(child, depth - 1, true, alpha, beta);
+            min = eval < min ? eval : min;
+            beta = eval < beta ? eval : beta;
             if (beta <= alpha) {
                 break;
             }
