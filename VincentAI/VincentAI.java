@@ -11,9 +11,8 @@ public class VincentAI implements CFPlayer {
     char color;
     boolean whose_turn;
     static int[][] entry_vals;
-    static int rows;
-    static int cols;
-
+    static int rows = 6;
+    static int cols = 7;
     static {
         Grid myGrid = new Grid();
         rows = 6;
@@ -44,7 +43,7 @@ public class VincentAI implements CFPlayer {
         setBoard(copyMatrix(g.get_grid())); // set board for current move
         setColor(g.get_whose_turn() ? 'R' : 'B'); // find out what color you are
         Node<char[][]> position = new Node<>(copyMatrix(board), null);
-        minimax(position, 7, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        minimax(position, 8, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
         Node<char[][]> best_move = position;
         int max = Integer.MIN_VALUE;
         for (Node<char[][]> child : position.getNext()) {

@@ -32,7 +32,7 @@ public class CFGame {
                 if (grid[i][j] == 'R') {
                     System.out.print("| RED  ");
                 } else if (grid[i][j] == 'B') {
-                    System.out.print("| BLUE ");
+                    System.out.print("| BLACK ");
                 } else if (grid[i][j] == 'O') {
                     System.out.print("|      ");
                 }

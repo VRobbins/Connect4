@@ -23,7 +23,7 @@ public class GUICF extends CFGame {
         JPanel full_board = new JPanel();
         full_board.setLayout(new GridLayout(0, 7));
         for (int i = 0; i < 7; i++) { // add first row of buttons
-            PlayButton = new JButton("\u2193");
+            PlayButton = new JButton(String.valueOf(i+1));
             Ai_versus_Human listener = new Ai_versus_Human();
             PlayButton.addActionListener(listener);
             listener.set_col(i);

@@ -120,7 +120,7 @@ public class ConsoleCF extends CFGame {
             if (game.getWinner() == ai2.getName()) {
                 winCount2++;
             }
-            System.out.println(i);
+            System.out.println("Game Number: "+i);
         }
         System.out.print(ai1.getName() + " wins ");
         System.out.print(((double) winCount) / ((double) n) * 100 + "%");

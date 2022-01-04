@@ -12,3 +12,11 @@
 - change storage of board to booleans (save space)
 - merge redwin and blackwin functions (save time)
 - glitch somewhere
+
+- change winner to get winner
+- Make name a changeable field
+- Make columns and rows changeable
+- Untrack ConsoleCF?
+- Make GUI better
+- Get rid of consoleCF HumanAI
+- Change board to booleans
