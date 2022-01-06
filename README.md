@@ -20,3 +20,5 @@
 - Make GUI better
 - Get rid of consoleCF HumanAI
 - Change board to booleans
+
+- Instead of char, use grid of bools with a bool mask

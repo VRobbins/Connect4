@@ -1,6 +1,7 @@
 package GUICF;
 
 import javax.swing.*;
+import java.awt.geom.*;
 
 import CFGame.CFGame;
 import CFPlayer.CFPlayer;
@@ -12,39 +13,71 @@ import java.util.*;
 public class GUICF extends CFGame {
     GUICF g = this;
     JButton PlayButton;
-    CFPlayer p1;
-    CFPlayer p2;
+    CFPlayer p1=null;
+    CFPlayer p2=null;
     private GameBoard thisboard;
+    JLabel[][] labels;
 
-    JLabel[][] labels = new JLabel[6][7];
+    class Ellipse implements Icon {
+        int width;
+        int height; 
+        Color color;
+        public Ellipse(int input_width, int input_height, Color input_color) {
+            width = input_width;
+            height = input_height;
+            color = input_color;
+        }
+        @Override
+        public int getIconWidth() {
+            return width;
+        }
+        @Override
+        public int getIconHeight() {
+            return height;
+        }
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            g.setColor(color);
+            g.fillOval(x, y, width, height);
+        }
+    }
+
     public GUICF(CFPlayer ai) { // ai vs user
+        super(ai.get_rows(), ai.get_columns());
         p1 = ai;
+        Random rand = new Random();
+        boolean does_ai_start = rand.nextBoolean();
+        labels = new JLabel[get_rows()][get_cols()];
         thisboard = new GameBoard();
         JPanel full_board = new JPanel();
-        full_board.setLayout(new GridLayout(0, 7));
-        for (int i = 0; i < 7; i++) { // add first row of buttons
+        full_board.setLayout(new GridLayout(0, get_cols()));
+        for (int i = 0; i < get_cols(); ++i) { // add first row of buttons
             PlayButton = new JButton(String.valueOf(i+1));
             Ai_versus_Human listener = new Ai_versus_Human();
             PlayButton.addActionListener(listener);
             listener.set_col(i);
             full_board.add(PlayButton);
         }
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 7; j++) {
+        for (int i = 0; i < get_rows(); ++i) {
+            for (int j = 0; j < get_cols(); ++j) {
                 full_board.add(labels[i][j]); // add relevent label for every entry in grid
             }
         }
         JFrame frame = new JFrame(" Connect Four ");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().add(full_board);
-        frame.setSize(1000, 800);
-        Random rand = new Random();
-        if(rand.nextBoolean()==true)
-        {
+        frame.setSize(800, 800); // 1000,800
+        //frame.setResizable(false);
+        frame.setVisible(true);
+        for(int i = 0; i<get_rows();++i) {
+            for( int j = 0; j<get_cols();++j) {
+                Ellipse Piece = new Ellipse(3*labels[i][j].getWidth()/4,3*labels[i][j].getHeight()/4,Color.WHITE);
+                    labels[i][j].setIcon(Piece);
+            }
+        }
+        if(does_ai_start){
             playGUI(p1.nextMove(g));
         }
-        frame.setVisible(true);
-
     }
 
     private class Ai_versus_Human implements ActionListener {
@@ -55,7 +88,7 @@ public class GUICF extends CFGame {
         }
 
         public void actionPerformed(ActionEvent event) {
-            if (isGameOver() == false && get_grid()[5][col] == 'O') {
+            if (isGameOver() == false && get_grid()[get_rows()-1][col] == 'O') {
                 playGUI(col);
                 if (isGameOver() == false) { // play the AI's next move if you didn't just win
                     playGUI(p1.nextMove(g));
@@ -80,42 +113,47 @@ public class GUICF extends CFGame {
     }
 
     public GUICF(CFPlayer ai1, CFPlayer ai2) {
+        super(ai1.get_rows(), ai1.get_columns());
+        labels = new JLabel[get_rows()][get_cols()];
         Random rand = new Random();
-        if(rand.nextBoolean()==true)
-        {
-            p1 = ai1;
-        p2 = ai2;
-        }
-        else{
-            p2 = ai1;
-            p1 = ai2;
-        }
-        /*
-        p1=ai1;
-        p2=ai2;
-        */
-        
+        p1 = rand.nextBoolean()? ai1 : ai2;
+        p2 = p1 == ai1? ai2 : ai1;
         thisboard = new GameBoard();
         JPanel full_board = new JPanel();
-        full_board.setLayout(new GridLayout(0, 7));
-        for (int i = 0; i < 6; i++) { // add JButtons to first row
-            full_board.add(new JLabel());
-            if (i == 2) { // button in center is a play button
+        full_board.setLayout(new GridLayout(0, get_cols()));
+        for (int i = 0; i < get_cols(); ++i) { // add JButtons to first row
+            if (i == get_cols()/2) { // button in center is a play button
                 PlayButton = new JButton("Play");
                 PlayButton.addActionListener(new Ai_versus_Ai());
+                PlayButton.setOpaque(true);
+                PlayButton.setBackground(Color.BLUE);
                 full_board.add(PlayButton);
             }
+            else {
+            JLabel next = new JLabel();
+            next.setBackground(Color.BLUE);
+            next.setOpaque(true);
+            full_board.add(next);
+            }
         }
-        for (int i = 0; i < 6; i++) { // add the rest of the JLabels
-            for (int j = 0; j < 7; j++) {
+        for (int i = 0; i < get_rows(); ++i) { // add the rest of the JLabels
+            for (int j = 0; j < get_cols(); ++j) {
                 full_board.add(labels[i][j]);
             }
         }
         JFrame frame = new JFrame(" Connect Four ");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().add(full_board);
-        frame.setSize(1000, 800);
+        frame.setSize(800, 800);
         frame.setVisible(true);
+        for(int i = 0; i<get_rows();++i) {
+            for(int j = 0; j<get_cols();++j) {
+                Ellipse Piece = new Ellipse(3*labels[i][j].getWidth()/4,3*labels[i][j].getHeight()/4,Color.WHITE);
+                labels[i][j].setIcon(Piece);
+                labels[i][j].setHorizontalAlignment(JLabel.CENTER);
+                labels[i][j].setVerticalAlignment(JLabel.CENTER);
+            }
+        }
     }
 
     private boolean playGUI(int c) { // play respective column and paint
@@ -126,28 +164,25 @@ public class GUICF extends CFGame {
 
     private class GameBoard extends javax.swing.JPanel {
         private GameBoard() { 
-            GridLayout my_layout = new GridLayout(6, 7);
+            GridLayout my_layout = new GridLayout(get_rows(), get_cols());
             setLayout(my_layout);
-            for (int i = 0; i < 6; i++) { // initialize empty board with grid layout
-                for (int j = 0; j < 7; j++) {
+            for (int i = 0; i < get_rows(); ++i) { // initialize empty board with grid layout
+                for (int j = 0; j < get_cols(); ++j) {
                     labels[i][j] = new JLabel();
                     labels[i][j].setOpaque(true);
-                    labels[i][j].setBorder(BorderFactory.createLineBorder(Color.GRAY));
+                    labels[i][j].setBorder(BorderFactory.createLoweredBevelBorder());
+                    labels[i][j].setBackground(Color.BLUE);
                     add(labels[i][j]);
                 }
             }
         }
         private void paint(int x, int y, int color) {// paint appropriate square (must horizontally flip current grid)
-            if (color == 1) { 
-                labels[6 - 1 - x][y].setBackground(Color.BLACK);
-
-            } else {
-                labels[6 - 1 - x][y].setBackground(Color.RED);
-            }
+            //labels[get_rows() - 1 - x][y].setBackground(color==1? Color.BLACK : Color.RED);
+            Ellipse Piece = new Ellipse(3*labels[get_rows() - 1 - x][y].getWidth()/4,3*labels[get_rows() - 1 - x][y].getHeight()/4, color==1? Color.YELLOW : Color.RED);
+            labels[get_rows() - 1 - x][y].setIcon(Piece);
         }
     }
     public GameBoard get_board() { // return board
         return thisboard;
     }
-
 }

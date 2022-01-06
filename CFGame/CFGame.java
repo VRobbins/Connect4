@@ -4,8 +4,8 @@ import Grid.Grid;
 public class CFGame {
     public boolean whose_turn = true; // true = red
     int count = 0;
-    static int rows = 6;
-    static int columns = 7;
+    int rows = 6;
+    int columns = 7;
     int winner = 0;
     public char[][] grid = new char[rows][columns];
     public int[] last_coord = new int[2];
@@ -13,8 +13,23 @@ public class CFGame {
     public boolean get_whose_turn() {
         return whose_turn;
     }
-
+    public int get_rows() {
+        return rows;
+    }
+    public int get_cols() {
+        return columns;
+    }
     public CFGame() {
+        for (int i = 0; i < rows; i++) { // initialize 'O' in every entry as empty
+            for (int j = 0; j < columns; j++) {
+                grid[i][j] = 'O';
+            }
+        }
+    }
+    public CFGame(int input_rows, int input_columns) {
+        rows = input_rows == -1? 6:input_rows;
+        columns=input_columns==-1 ? 7 : input_columns;
+        grid = new char[rows][columns];
         for (int i = 0; i < rows; i++) { // initialize 'O' in every entry as empty
             for (int j = 0; j < columns; j++) {
                 grid[i][j] = 'O';
@@ -30,11 +45,11 @@ public class CFGame {
         for (int i = rows - 1; i > -1; i--) {
             for (int j = 0; j < columns; j++) {
                 if (grid[i][j] == 'R') {
-                    System.out.print("| RED  ");
-                } else if (grid[i][j] == 'B') {
-                    System.out.print("| BLACK ");
+                    System.out.print("| RED   ");
+                } else if (grid[i][j] == 'Y') {
+                    System.out.print("| YELLOW ");
                 } else if (grid[i][j] == 'O') {
-                    System.out.print("|      ");
+                    System.out.print("|       ");
                 }
             }
             System.out.print("|");
@@ -49,7 +64,7 @@ public class CFGame {
                     grid[i][c] = 'R';
                     whose_turn = false;
                 } else {
-                    grid[i][c] = 'B';
+                    grid[i][c] = 'Y';
                     whose_turn = true;
                 }
                 last_coord[0] = i;
@@ -72,9 +87,9 @@ public class CFGame {
             winner = 1;
             return true;
         }
-        if(myGrid.contains_horizontal(grid, last_coord[0]) == 'B' || myGrid.contains_vertical(grid, last_coord[1])
-        == 'B' || myGrid.contains_forward_slash(grid, last_coord[0], last_coord[1]) == 'B' 
-        || myGrid.contains_backslash(grid, last_coord[0], last_coord[1])   == 'B' )
+        if(myGrid.contains_horizontal(grid, last_coord[0]) == 'Y' || myGrid.contains_vertical(grid, last_coord[1])
+        == 'Y' || myGrid.contains_forward_slash(grid, last_coord[0], last_coord[1]) == 'Y' 
+        || myGrid.contains_backslash(grid, last_coord[0], last_coord[1])   == 'Y' )
         {
             winner = -1;
             return true;

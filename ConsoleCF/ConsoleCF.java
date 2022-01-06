@@ -14,6 +14,14 @@ public class ConsoleCF extends CFGame {
     CFGame game = new CFGame();
 
     private class HumanPlayer implements CFPlayer {
+        public int get_rows() {
+            return -1;
+        }
+
+        public int get_columns() {
+            return -1;
+        }
+
         public int nextMove(CFGame g) {
             char[][] grid = g.get_grid();
             boolean[] legal = new boolean[grid[0].length];
@@ -78,7 +86,6 @@ public class ConsoleCF extends CFGame {
     }
 
     public void playOut() {
-
         while (!game.isGameOver()) {
             game.play(first.nextMove(game));
             // game.print();
@@ -105,8 +112,7 @@ public class ConsoleCF extends CFGame {
     }
 
     public static void main(String[] args) {
-
-        CFPlayer ai1 = new VincentAI();
+        CFPlayer ai1 = new VincentAI(6, 7);
         CFPlayer ai2 = new RandomAI();
         int n = 10000;
         int winCount = 0;
@@ -120,7 +126,7 @@ public class ConsoleCF extends CFGame {
             if (game.getWinner() == ai2.getName()) {
                 winCount2++;
             }
-            System.out.println("Game Number: "+i);
+            System.out.println("Game Number: " + i);
         }
         System.out.print(ai1.getName() + " wins ");
         System.out.print(((double) winCount) / ((double) n) * 100 + "%");

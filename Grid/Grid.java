@@ -1,6 +1,7 @@
 package Grid;
 
 public class Grid {
+
     public char contains_horizontal(char[][] input, int last_row) { // is there a horizontal line of four?
         int countR = 0;
         int countB = 0;
@@ -11,7 +12,7 @@ public class Grid {
             } else if (input[last_row][j] == 'R') {
                 countR += 1;
                 countB = 0;
-            } else if (input[last_row][j] == 'B') {
+            } else if (input[last_row][j] == 'Y') {
                 countB += 1;
                 countR = 0;
             }
@@ -19,7 +20,7 @@ public class Grid {
                 return 'R';
             }
             if (countB == 4) {
-                return 'B';
+                return 'Y';
             }
         }
         return 'O';
@@ -34,7 +35,7 @@ public class Grid {
             } else if (input[i][last_col] == 'R') {
                 countR += 1;
                 countB = 0;
-            } else if (input[i][last_col] == 'B') {
+            } else if (input[i][last_col] == 'Y') {
                 countB += 1;
                 countR = 0;
             }
@@ -42,7 +43,7 @@ public class Grid {
                 return 'R';
             }
             if (countB == 4) {
-                return 'B';
+                return 'Y';
             }
         }
         return 'O';
@@ -60,7 +61,7 @@ public class Grid {
             } else if (input[i + index][j + index] == 'R') {
                 countR += 1;
                 countB = 0;
-            } else if (input[i + index][j + index] == 'B') {
+            } else if (input[i + index][j + index] == 'Y') {
                 countB += 1;
                 countR = 0;
             }
@@ -68,7 +69,7 @@ public class Grid {
                 return 'R';
             }
             if (countB == 4) {
-                return 'B';
+                return 'Y';
             }
         }
         return 'O';
@@ -87,8 +88,6 @@ public class Grid {
     }
 
     public int number_wins_with_element(int[][] input, int input_row, int input_column) {
-        int row = input_row;
-        int col = input_column;
         int num_r = input_column <= input[0].length / 2 ? input_column + 1 : (input[0].length - 1) - input_column + 1;
         int num_c = input_row < input.length / 2 ? input_row + 1 : (input.length - 1) - input_row + 1;
         int diag = 0;
@@ -98,8 +97,7 @@ public class Grid {
         while (input_row + index_up < input.length && input_column + index_up < input[0].length && index_up < 4) {
             ++index_up;
         }
-        while(input_row - index_down >= 0 && input_column - index_down >= 0 && index_down<4)
-        {
+        while(input_row - index_down >= 0 && input_column - index_down >= 0 && index_down<4){
             ++index_down;
         }
         diag = index_up + index_down - 1 < 4 ? 0 : index_up - 2 + index_down - 2;
