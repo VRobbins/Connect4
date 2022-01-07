@@ -56,7 +56,7 @@ public class GUICF extends CFGame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, get_cols()));
         for (int i = 0; i < get_cols(); ++i) { // add first row of buttons
-            PlayButton = new JButton(String.valueOf(i + 1));
+            PlayButton = new JButton(String.valueOf(i + 1)); // Enumerate Buttons
             Ai_versus_Human listener = new Ai_versus_Human();
             PlayButton.addActionListener(listener);
             listener.set_col(i);
@@ -73,7 +73,7 @@ public class GUICF extends CFGame {
         frame.setSize(800, 800); // 1000,800
         frame.setResizable(false);
         frame.setVisible(true);
-        for (int i = 0; i < get_rows(); ++i) {
+        for (int i = 0; i < get_rows(); ++i) { // Initialize White Circles
             for (int j = 0; j < get_cols(); ++j) {
                 Ellipse piece = new Ellipse(3 * labels[i][j].getWidth() / 4, 3 * labels[i][j].getHeight() / 4,
                         Color.WHITE);
