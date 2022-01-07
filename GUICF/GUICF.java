@@ -13,28 +13,32 @@ import java.util.*;
 public class GUICF extends CFGame {
     GUICF g = this;
     JButton PlayButton;
-    CFPlayer p1=null;
-    CFPlayer p2=null;
+    CFPlayer p1 = null;
+    CFPlayer p2 = null;
     private GameBoard thisboard;
     JLabel[][] labels;
 
     class Ellipse implements Icon {
         int width;
-        int height; 
+        int height;
         Color color;
+
         public Ellipse(int input_width, int input_height, Color input_color) {
             width = input_width;
             height = input_height;
             color = input_color;
         }
+
         @Override
         public int getIconWidth() {
             return width;
         }
+
         @Override
         public int getIconHeight() {
             return height;
         }
+
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             g.setColor(color);
@@ -52,7 +56,7 @@ public class GUICF extends CFGame {
         JPanel full_board = new JPanel();
         full_board.setLayout(new GridLayout(0, get_cols()));
         for (int i = 0; i < get_cols(); ++i) { // add first row of buttons
-            PlayButton = new JButton(String.valueOf(i+1));
+            PlayButton = new JButton(String.valueOf(i + 1));
             Ai_versus_Human listener = new Ai_versus_Human();
             PlayButton.addActionListener(listener);
             listener.set_col(i);
@@ -67,15 +71,16 @@ public class GUICF extends CFGame {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().add(full_board);
         frame.setSize(800, 800); // 1000,800
-        //frame.setResizable(false);
+        // frame.setResizable(false);
         frame.setVisible(true);
-        for(int i = 0; i<get_rows();++i) {
-            for( int j = 0; j<get_cols();++j) {
-                Ellipse Piece = new Ellipse(3*labels[i][j].getWidth()/4,3*labels[i][j].getHeight()/4,Color.WHITE);
-                    labels[i][j].setIcon(Piece);
+        for (int i = 0; i < get_rows(); ++i) {
+            for (int j = 0; j < get_cols(); ++j) {
+                Ellipse Piece = new Ellipse(3 * labels[i][j].getWidth() / 4, 3 * labels[i][j].getHeight() / 4,
+                        Color.WHITE);
+                labels[i][j].setIcon(Piece);
             }
         }
-        if(does_ai_start){
+        if (does_ai_start) {
             playGUI(p1.nextMove(g));
         }
     }
@@ -88,7 +93,7 @@ public class GUICF extends CFGame {
         }
 
         public void actionPerformed(ActionEvent event) {
-            if (isGameOver() == false && get_grid()[get_rows()-1][col] == 'O') {
+            if (isGameOver() == false && get_mask()[get_rows() - 1][col] == false) {
                 playGUI(col);
                 if (isGameOver() == false) { // play the AI's next move if you didn't just win
                     playGUI(p1.nextMove(g));
@@ -116,24 +121,23 @@ public class GUICF extends CFGame {
         super(ai1.get_rows(), ai1.get_columns());
         labels = new JLabel[get_rows()][get_cols()];
         Random rand = new Random();
-        p1 = rand.nextBoolean()? ai1 : ai2;
-        p2 = p1 == ai1? ai2 : ai1;
+        p1 = rand.nextBoolean() ? ai1 : ai2;
+        p2 = p1 == ai1 ? ai2 : ai1;
         thisboard = new GameBoard();
         JPanel full_board = new JPanel();
         full_board.setLayout(new GridLayout(0, get_cols()));
         for (int i = 0; i < get_cols(); ++i) { // add JButtons to first row
-            if (i == get_cols()/2) { // button in center is a play button
+            if (i == get_cols() / 2) { // button in center is a play button
                 PlayButton = new JButton("Play");
                 PlayButton.addActionListener(new Ai_versus_Ai());
                 PlayButton.setOpaque(true);
                 PlayButton.setBackground(Color.BLUE);
                 full_board.add(PlayButton);
-            }
-            else {
-            JLabel next = new JLabel();
-            next.setBackground(Color.BLUE);
-            next.setOpaque(true);
-            full_board.add(next);
+            } else {
+                JLabel next = new JLabel();
+                next.setBackground(Color.BLUE);
+                next.setOpaque(true);
+                full_board.add(next);
             }
         }
         for (int i = 0; i < get_rows(); ++i) { // add the rest of the JLabels
@@ -146,9 +150,10 @@ public class GUICF extends CFGame {
         frame.getContentPane().add(full_board);
         frame.setSize(800, 800);
         frame.setVisible(true);
-        for(int i = 0; i<get_rows();++i) {
-            for(int j = 0; j<get_cols();++j) {
-                Ellipse Piece = new Ellipse(3*labels[i][j].getWidth()/4,3*labels[i][j].getHeight()/4,Color.WHITE);
+        for (int i = 0; i < get_rows(); ++i) {
+            for (int j = 0; j < get_cols(); ++j) {
+                Ellipse Piece = new Ellipse(3 * labels[i][j].getWidth() / 4, 3 * labels[i][j].getHeight() / 4,
+                        Color.WHITE);
                 labels[i][j].setIcon(Piece);
                 labels[i][j].setHorizontalAlignment(JLabel.CENTER);
                 labels[i][j].setVerticalAlignment(JLabel.CENTER);
@@ -163,7 +168,7 @@ public class GUICF extends CFGame {
     }
 
     private class GameBoard extends javax.swing.JPanel {
-        private GameBoard() { 
+        private GameBoard() {
             GridLayout my_layout = new GridLayout(get_rows(), get_cols());
             setLayout(my_layout);
             for (int i = 0; i < get_rows(); ++i) { // initialize empty board with grid layout
@@ -176,12 +181,16 @@ public class GUICF extends CFGame {
                 }
             }
         }
+
         private void paint(int x, int y, int color) {// paint appropriate square (must horizontally flip current grid)
-            //labels[get_rows() - 1 - x][y].setBackground(color==1? Color.BLACK : Color.RED);
-            Ellipse Piece = new Ellipse(3*labels[get_rows() - 1 - x][y].getWidth()/4,3*labels[get_rows() - 1 - x][y].getHeight()/4, color==1? Color.YELLOW : Color.RED);
+            // labels[get_rows() - 1 - x][y].setBackground(color==1? Color.BLACK :
+            // Color.RED);
+            Ellipse Piece = new Ellipse(3 * labels[get_rows() - 1 - x][y].getWidth() / 4,
+                    3 * labels[get_rows() - 1 - x][y].getHeight() / 4, color == 1 ? Color.YELLOW : Color.RED);
             labels[get_rows() - 1 - x][y].setIcon(Piece);
         }
     }
+
     public GameBoard get_board() { // return board
         return thisboard;
     }

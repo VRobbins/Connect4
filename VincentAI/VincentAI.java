@@ -7,7 +7,8 @@ import Grid.Grid;
 import java.util.ArrayList;
 
 public class VincentAI implements CFPlayer {
-    char[][] board;
+    boolean[][] board;
+    boolean[][] mask;
     char color;
     boolean whose_turn;
     int[][] entry_vals;
@@ -38,8 +39,11 @@ public class VincentAI implements CFPlayer {
         return "Vincent's AI";
     }
 
-    public void setBoard(char[][] input_board) {
+    public void setBoard(boolean[][] input_board) {
         board = input_board;
+    }
+    public void setMask(boolean[][] input_mask) {
+        mask = input_mask;
     }
 
     public void setColor(char inputColor) {
@@ -48,12 +52,13 @@ public class VincentAI implements CFPlayer {
 
     public int nextMove(CFGame g) {
         setBoard(copyMatrix(g.get_grid())); // set board for current move
+        setMask(copyMatrix(g.get_mask()));
         setColor(g.get_whose_turn() ? 'R' : 'Y'); // find out what color you are
-        Node<char[][]> position = new Node<>(copyMatrix(board), null);
+        Node<boolean[][]> position = new Node<>(copyMatrix(board), copyMatrix(mask), null);
         minimax(position, 5, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        Node<char[][]> best_move = position;
+        Node<boolean[][]> best_move = position;
         int max = Integer.MIN_VALUE;
-        for (Node<char[][]> child : position.getNext()) {
+        for (Node<boolean[][]> child : position.getNext()) {
             if (child.getVal() > max) {
                 best_move = child;
                 max = child.getVal();
@@ -61,9 +66,9 @@ public class VincentAI implements CFPlayer {
         }
         if (max == Integer.MIN_VALUE + 1) {
             minimax(position, 2, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            Node<char[][]> best_move2 = position;
+            Node<boolean[][]> best_move2 = position;
             int max2 = Integer.MIN_VALUE;
-            for (Node<char[][]> child : position.getNext()) {
+            for (Node<boolean[][]> child : position.getNext()) {
                 if (child.getVal() > max2) {
                     best_move2 = child;
                     max2 = child.getVal();
@@ -74,27 +79,30 @@ public class VincentAI implements CFPlayer {
         return best_move.get_last_col();
     }
 
-    public ArrayList<Node<char[][]>> generateChildren(Node<char[][]> input_parent, boolean nextColor) // true == RED
+    public ArrayList<Node<boolean[][]>> generateChildren(Node<boolean[][]> input_parent, boolean nextColor) // true == RED
     {
-        ArrayList<Node<char[][]>> ret = new ArrayList<>();
+        ArrayList<Node<boolean[][]>> ret = new ArrayList<>();
         for (int j = 0; j < board[0].length; ++j) { // find legal moves
-            if (input_parent.getData()[input_parent.getData().length - 1][j] == 'O') {
-                ret.add(play(input_parent.getData(), j, nextColor));
+            if (input_parent.getMask()[input_parent.getMask().length - 1][j] == false) {
+                ret.add(play(input_parent.getData(), input_parent.getMask(), j, nextColor));
             }
         }
         input_parent.setNext(ret);
         return ret;
     }
 
-    public Node<char[][]> play(char[][] input_board, int col, boolean nextColor) // TRUE==RED
+    public Node<boolean[][]> play(boolean[][] input_board, boolean[][] input_mask, int col, boolean nextColor) // TRUE==RED
     {
-        char[][] output_board = copyMatrix(input_board);
-        Node<char[][]> outputNode = new Node<>();
+        boolean[][] output_board = copyMatrix(input_board);
+        boolean[][] output_mask = copyMatrix(input_mask);
+        Node<boolean[][]> outputNode = new Node<>();
         for (int i = 0; i < output_board.length; ++i) {
-            if (output_board[i][col] == 'O') { // go up rows until there is a space
+            if (output_mask[i][col] == false) { // go up rows until there is a space
                 {
-                    output_board[i][col] = nextColor ? 'R' : 'Y';
+                    output_board[i][col] = nextColor ? true : false;
+                    output_mask[i][col] = true;
                     outputNode.setData(output_board);
+                    outputNode.setMask(output_mask);
                     outputNode.setNext(null);
                     outputNode.set_last(i, col);
                     return outputNode;
@@ -105,64 +113,66 @@ public class VincentAI implements CFPlayer {
         return outputNode;
     }
 
-    public int boardValue(Node<char[][]> position) { // return 100 (-100) if you win (resp. lose) in this position
+    public int boardValue(Node<boolean[][]> position) { // return 100 (-100) if you win (resp. lose) in this position
         Grid myGrid = new Grid();
-        if (redWin(position)) {
+        char winchar = Win(position);
+        if (winchar=='R') {
             return color == 'R' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1;
         }
-        if (blackWin(position)) {
+        if (winchar=='Y') {
             return color == 'Y' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1;
         }
-        char[][] board = position.getData();
+        boolean[][] board = position.getData();
+        boolean[][] mask = position.getMask();
         int sum_r = 0;
         int sum_b = 0;
         for (int i = 0; i < board.length; ++i) {
             for (int j = 0; j < board[0].length; ++j) {
-                if (board[i][j] == 'R')
+                if (board[i][j] == true && mask[i][j] == true)
                     sum_r += entry_vals[i][j];
-                else if (board[i][j] == 'Y')
+                else if (board[i][j] == false && mask[i][j] == true)
                     sum_b += entry_vals[i][j];
             }
         }
         return color == 'R' ? sum_r - sum_b : sum_b - sum_r;
     }
 
-    public boolean redWin(Node<char[][]> pos) { // returns true if red wins
+    public char Win(Node<boolean[][]> pos) { // returns true if red wins
         Grid myGrid = new Grid();
-        return myGrid.contains_horizontal(pos.getData(), pos.get_last_row()) == 'R'
-                || myGrid.contains_vertical(pos.getData(), pos.get_last_col()) == 'R'
-                || myGrid.contains_forward_slash(pos.getData(), pos.get_last_row(), pos.get_last_col()) == 'R'
-                || myGrid.contains_backslash(pos.getData(), pos.get_last_row(), pos.get_last_col()) == 'R';
+        char[] contains = new char[4];
+        contains[0] = myGrid.contains_horizontal(pos.getData(), pos.getMask(), pos.get_last_row());
+        contains[1] = myGrid.contains_vertical(pos.getData(), pos.getMask(),pos.get_last_col());
+        contains[2] = myGrid.contains_forward_slash(pos.getData(), pos.getMask(),pos.get_last_row(), pos.get_last_col());
+        contains[3] = myGrid.contains_backslash(pos.getData(), pos.getMask(),pos.get_last_row(), pos.get_last_col());
+        for(int i = 0;i<4;++i) {
+            if(contains[i]!='O') {
+                return contains[i];
+            }
+        }
+        return 'O';
     }
 
-    public boolean blackWin(Node<char[][]> pos) { // returns true if black wins
-        Grid myGrid = new Grid();
-        return myGrid.contains_horizontal(pos.getData(), pos.get_last_row()) == 'Y'
-                || myGrid.contains_vertical(pos.getData(), pos.get_last_col()) == 'Y'
-                || myGrid.contains_forward_slash(pos.getData(), pos.get_last_row(), pos.get_last_col()) == 'Y'
-                || myGrid.contains_backslash(pos.getData(), pos.get_last_row(), pos.get_last_col()) == 'Y';
-    }
-
-    public int minimax(Node<char[][]> position, int depth, boolean isMaxing, int alpha, int beta) // max when at your
+    public int minimax(Node<boolean[][]> position, int depth, boolean isMaxing, int alpha, int beta) // max when at your
                                                                                                   // color
     {
         boolean amIRed = color == 'R';
+        char winchar = Win(position);
         if (depth == 0) {
             position.setVal(boardValue(position));
             return position.getVal();
-        } else if (redWin(position)) {
+        } else if (winchar=='R') {
             position.setVal(color == 'R' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1);
             return color == 'R' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1;
-        } else if (blackWin(position)) {
+        } else if (winchar=='Y') {
             position.setVal(color == 'Y' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1);
             return color == 'Y' ? Integer.MAX_VALUE - 1 : Integer.MIN_VALUE + 1;
         }
         int eval = 0;
-        ArrayList<Node<char[][]>> children;
+        ArrayList<Node<boolean[][]>> children;
         if (isMaxing) {
             children = generateChildren(position, amIRed);
             int max = Integer.MIN_VALUE;
-            for (Node<char[][]> child : children) {
+            for (Node<boolean[][]> child : children) {
                 eval = minimax(child, depth - 1, false, alpha, beta);
                 max = eval > max ? eval : max;
                 alpha = eval > alpha ? eval : alpha;
@@ -175,7 +185,7 @@ public class VincentAI implements CFPlayer {
         }
         children = generateChildren(position, !amIRed);
         int min = Integer.MAX_VALUE;
-        for (Node<char[][]> child : children) {
+        for (Node<boolean[][]> child : children) {
             eval = minimax(child, depth - 1, true, alpha, beta);
             min = eval < min ? eval : min;
             beta = eval < beta ? eval : beta;
@@ -187,8 +197,8 @@ public class VincentAI implements CFPlayer {
         return min;
     }
 
-    public char[][] copyMatrix(char[][] input) { // copy matrix and return new one
-        char[][] result = new char[input.length][input[0].length];
+    public boolean[][] copyMatrix(boolean[][] input) { // copy matrix and return new one
+        boolean[][] result = new boolean[input.length][input[0].length];
         for (int i = 0; i < input.length; ++i) {
             result[i] = input[i].clone();
         }

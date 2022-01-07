@@ -23,10 +23,11 @@ public class ConsoleCF extends CFGame {
         }
 
         public int nextMove(CFGame g) {
-            char[][] grid = g.get_grid();
+            boolean[][] grid = g.get_grid();
+            boolean[][] mask = g.get_mask();
             boolean[] legal = new boolean[grid[0].length];
             for (int j = 0; j < grid[0].length; j++) { // check if there is an empty space to play
-                if (grid[grid.length - 1][j] == 'O') {
+                if (grid[grid.length - 1][j] == false) {
                     legal[j] = true;
                 } else {
                     legal[j] = false;
@@ -114,7 +115,8 @@ public class ConsoleCF extends CFGame {
     public static void main(String[] args) {
         CFPlayer ai1 = new VincentAI(6, 7);
         CFPlayer ai2 = new RandomAI();
-        int n = 10000;
+        long t1 = System.currentTimeMillis();
+        int n = 1000;
         int winCount = 0;
         int winCount2 = 0;
         for (int i = 0; i < n; i++) {
@@ -128,6 +130,7 @@ public class ConsoleCF extends CFGame {
             }
             System.out.println("Game Number: " + i);
         }
+        long t2 = System.currentTimeMillis();
         System.out.print(ai1.getName() + " wins ");
         System.out.print(((double) winCount) / ((double) n) * 100 + "%");
         System.out.print(" of the time.");
@@ -135,6 +138,7 @@ public class ConsoleCF extends CFGame {
         System.out.print(ai2.getName() + " wins ");
         System.out.print(((double) winCount2) / ((double) n) * 100 + "%");
         System.out.print(" of the time.");
+        System.out.println("This took "+(t2-t1)+" milliseconds");
 
         /*
          * CFPlayer ai1 = new VincentAI();

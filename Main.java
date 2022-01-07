@@ -6,6 +6,6 @@ public class Main {
     public static void main(String[] args) {
         VincentAI vince = new VincentAI(6,7);
         RandomAI randy = new RandomAI();
-        GUICF game = new GUICF(vince,randy);   
+        GUICF game = new GUICF(vince);   
     }
 }

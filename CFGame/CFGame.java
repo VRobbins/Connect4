@@ -1,4 +1,5 @@
 package CFGame;
+
 import Grid.Grid;
 
 public class CFGame {
@@ -7,48 +8,58 @@ public class CFGame {
     int rows = 6;
     int columns = 7;
     int winner = 0;
-    public char[][] grid = new char[rows][columns];
+    public boolean[][] grid = new boolean[rows][columns];
+    public boolean[][] mask = new boolean[rows][columns];
     public int[] last_coord = new int[2];
 
+    public boolean[][] get_mask() {
+        return mask;
+    }
     public boolean get_whose_turn() {
         return whose_turn;
     }
+
     public int get_rows() {
         return rows;
     }
+
     public int get_cols() {
         return columns;
     }
+
     public CFGame() {
         for (int i = 0; i < rows; i++) { // initialize 'O' in every entry as empty
             for (int j = 0; j < columns; j++) {
-                grid[i][j] = 'O';
-            }
-        }
-    }
-    public CFGame(int input_rows, int input_columns) {
-        rows = input_rows == -1? 6:input_rows;
-        columns=input_columns==-1 ? 7 : input_columns;
-        grid = new char[rows][columns];
-        for (int i = 0; i < rows; i++) { // initialize 'O' in every entry as empty
-            for (int j = 0; j < columns; j++) {
-                grid[i][j] = 'O';
+                grid[i][j] = false; // true is RED
+                mask[i][j] = false;
             }
         }
     }
 
-    public char[][] get_grid() {
+    public CFGame(int input_rows, int input_columns) {
+        rows = input_rows == -1 ? 6 : input_rows;
+        columns = input_columns == -1 ? 7 : input_columns;
+        grid = new boolean[rows][columns];
+        for (int i = 0; i < rows; i++) { // initialize 'O' in every entry as empty
+            for (int j = 0; j < columns; j++) {
+                grid[i][j] = false;
+                mask[i][j] = false;
+            }
+        }
+    }
+
+    public boolean[][] get_grid() {
         return grid;
     }
 
     public void print() {
         for (int i = rows - 1; i > -1; i--) {
             for (int j = 0; j < columns; j++) {
-                if (grid[i][j] == 'R') {
+                if (grid[i][j] && mask[i][j]) { // red
                     System.out.print("| RED   ");
-                } else if (grid[i][j] == 'Y') {
+                } else if (!grid[i][j] && mask[i][j]) {
                     System.out.print("| YELLOW ");
-                } else if (grid[i][j] == 'O') {
+                } else  {
                     System.out.print("|       ");
                 }
             }
@@ -59,12 +70,14 @@ public class CFGame {
 
     public boolean play(int c) { // plays a column from 1-7
         for (int i = 0; i < rows; i++) {
-            if (grid[i][c] == 'O') { // go up rows until there is a space
+            if (!mask[i][c]) { // go up rows until there is a space
                 if (whose_turn) {
-                    grid[i][c] = 'R';
+                    grid[i][c] = true;
+                    mask[i][c] = true;
                     whose_turn = false;
                 } else {
-                    grid[i][c] = 'Y';
+                    grid[i][c] = false;
+                    mask[i][c] = true;
                     whose_turn = true;
                 }
                 last_coord[0] = i;
@@ -78,24 +91,25 @@ public class CFGame {
         }
         return false;
     }
+
     public boolean isGameOver() {
         Grid myGrid = new Grid();
-        if(myGrid.contains_horizontal(grid, last_coord[0]) == 'R' || myGrid.contains_vertical(grid, last_coord[1])
-        == 'R' || myGrid.contains_forward_slash(grid, last_coord[0], last_coord[1]) == 'R' 
-        || myGrid.contains_backslash(grid, last_coord[0], last_coord[1])   == 'R' )
-        {
+        if (myGrid.contains_horizontal(grid, mask, last_coord[0]) == 'R'
+                || myGrid.contains_vertical(grid, mask, last_coord[1]) == 'R'
+                || myGrid.contains_forward_slash(grid, mask, last_coord[0], last_coord[1]) == 'R'
+                || myGrid.contains_backslash(grid, mask, last_coord[0], last_coord[1]) == 'R') {
             winner = 1;
             return true;
         }
-        if(myGrid.contains_horizontal(grid, last_coord[0]) == 'Y' || myGrid.contains_vertical(grid, last_coord[1])
-        == 'Y' || myGrid.contains_forward_slash(grid, last_coord[0], last_coord[1]) == 'Y' 
-        || myGrid.contains_backslash(grid, last_coord[0], last_coord[1])   == 'Y' )
-        {
+        if (myGrid.contains_horizontal(grid, mask, last_coord[0]) == 'Y'
+                || myGrid.contains_vertical(grid, mask, last_coord[1]) == 'Y'
+                || myGrid.contains_forward_slash(grid, mask, last_coord[0], last_coord[1]) == 'Y'
+                || myGrid.contains_backslash(grid, mask, last_coord[0], last_coord[1]) == 'Y') {
             winner = -1;
             return true;
         }
         winner = 0;
-        return count == rows*columns;
+        return count == rows * columns;
     }
 
     public int winner() { // return winner
