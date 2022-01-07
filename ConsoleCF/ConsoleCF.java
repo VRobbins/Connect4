@@ -23,7 +23,6 @@ public class ConsoleCF extends CFGame {
         }
 
         public int nextMove(CFGame g) {
-            boolean[][] grid = g.get_grid();
             boolean[][] mask = g.get_mask();
             boolean[] legal = new boolean[grid[0].length];
             for (int j = 0; j < grid[0].length; j++) { // check if there is an empty space to play
@@ -50,7 +49,6 @@ public class ConsoleCF extends CFGame {
                     }
                 }
                 in.close();
-
             }
             return num - 1;
         }
@@ -89,18 +87,13 @@ public class ConsoleCF extends CFGame {
     public void playOut() {
         while (!game.isGameOver()) {
             game.play(first.nextMove(game));
-            // game.print();
-            // System.out.println();
             if (!game.isGameOver()) {
                 game.play(second.nextMove(game));
-                // game.print();
-                // System.out.println();
             }
         }
         if (game.isGameOver()) {
             System.out.println(getWinner() + " Wins!");
         }
-
     }
 
     public String getWinner() {
@@ -113,24 +106,24 @@ public class ConsoleCF extends CFGame {
     }
 
     public static void main(String[] args) {
-        CFPlayer ai1 = new VincentAI(6, 7);
+        CFPlayer ai1 = new VincentAI(5);
         CFPlayer ai2 = new RandomAI();
-        long t1 = System.currentTimeMillis();
-        int n = 1000;
+        //long t1 = System.currentTimeMillis();
+        int n = 10000;
         int winCount = 0;
         int winCount2 = 0;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; ++i) {
             ConsoleCF game = new ConsoleCF(ai1, ai2);
             game.playOut();
-            if (game.getWinner() == ai1.getName()) {
+            if (game.getWinner().equals(ai1.getName())) {
                 winCount++;
             }
-            if (game.getWinner() == ai2.getName()) {
+            if (game.getWinner().equals(ai2.getName())) {
                 winCount2++;
             }
             System.out.println("Game Number: " + i);
         }
-        long t2 = System.currentTimeMillis();
+        //long t2 = System.currentTimeMillis();
         System.out.print(ai1.getName() + " wins ");
         System.out.print(((double) winCount) / ((double) n) * 100 + "%");
         System.out.print(" of the time.");
@@ -138,7 +131,7 @@ public class ConsoleCF extends CFGame {
         System.out.print(ai2.getName() + " wins ");
         System.out.print(((double) winCount2) / ((double) n) * 100 + "%");
         System.out.print(" of the time.");
-        System.out.println("This took "+(t2-t1)+" milliseconds");
+        //System.out.println("This took " + (t2 - t1) + " milliseconds");
 
         /*
          * CFPlayer ai1 = new VincentAI();
@@ -158,6 +151,5 @@ public class ConsoleCF extends CFGame {
          * }
          * }
          */
-
     }
 }

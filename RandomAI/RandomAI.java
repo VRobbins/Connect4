@@ -17,7 +17,7 @@ public class RandomAI implements CFPlayer {
         boolean[][] mask = g.get_mask();
         boolean[] legal = new boolean[mask[0].length];
         for (int j = 0; j < mask[0].length; ++j) { // check if there is an empty space to play
-            legal[j] = mask[mask.length - 1][j] == false;
+            legal[j] = !mask[mask.length - 1][j];
         }
         Random rand = new Random();
         int x = rand.nextInt(legal.length);
