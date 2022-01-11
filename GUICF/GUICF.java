@@ -71,7 +71,7 @@ public class GUICF extends CFGame {
         frame.setDefaultCloseOperation(2); // JFrame.DISPOSE_ON_CLOSE = 2
         frame.getContentPane().add(panel);
         frame.setSize(800, 800); // 1000,800
-        frame.setResizable(false);
+        frame.setResizable(true);
         frame.setVisible(true);
         for (int i = 0; i < get_rows(); ++i) { // Initialize White Circles
             for (int j = 0; j < get_cols(); ++j) {
@@ -186,8 +186,8 @@ public class GUICF extends CFGame {
         private void paint(int x, int y, int color) {// paint appropriate square (must horizontally flip current grid)
             // labels[get_rows() - 1 - x][y].setBackground(color==1? Color.BLACK
             // :Color.RED);
-            Ellipse piece = new Ellipse(3 * labels[get_rows() - 1 - x][y].getWidth() / 4,
-                    3 * labels[get_rows() - 1 - x][y].getHeight() / 4, color == 1 ? Color.YELLOW : Color.RED); 
+            Ellipse piece = new Ellipse(labels[get_rows() - 1 - x][y].getIcon().getIconWidth() ,
+                    labels[get_rows() - 1 - x][y].getIcon().getIconHeight() , color == 1 ? Color.YELLOW : Color.RED); 
             labels[get_rows() - 1 - x][y].setIcon(piece);
         }
     }
